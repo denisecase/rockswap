@@ -1,0 +1,25 @@
+# ============================================================
+# File: .github/dependabot.yml
+# Purpose: Keep dependencies up to date automatically
+# ------------------------------------------------------------
+# Dependabot is a GitHub service that checks for new versions
+# of npm packages and GitHub Actions every week.
+#
+# When updates are available, it opens pull requests labeled
+# "deps" so they can be reviewed and merged easily.
+# ============================================================
+
+version: 2
+
+updates:
+  # ----------------------------------------------------------
+  # Monitor npm dependencies in this repository
+  # ----------------------------------------------------------
+  - package-ecosystem: "npm" # The package manager used (npm)
+    directory: "/" # Root directory of the project
+    schedule:
+      interval: "weekly" # Check for updates once per week
+    open-pull-requests-limit: 5 # Max number of open PRs at once
+    commit-message:
+      prefix: "deps" # Prefix for Dependabot commit messages
+    versioning-strategy: increase # Bump to the next version automatically

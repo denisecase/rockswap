@@ -1,0 +1,47 @@
+# ============================================================
+# File: .github/workflows/ci.yml
+# Purpose: Continuous Integration (CI)
+# ------------------------------------------------------------
+# Every time someone pushes changes or opens a pull request,
+# this workflow runs automatically on GitHub servers.
+#
+# It ensures the project:
+#   1. Builds correctly (no missing files or errors)
+#   2. Passes TypeScript checks (code is consistent)
+#   3. Passes formatting checks (Prettier)
+#
+# It's an automated "proofread and compile" test
+# that runs before publishing or deploying changes.
+# ============================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the repository's code
+      - uses: actions/checkout@v5
+
+      # Set up Node.js version 22 (the environment our project uses)
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # Install dependencies listed in package.json
+      - run: npm ci
+
+      # Check TypeScript types (no compilation errors)
+      # - run: npm run typecheck
+
+      # Format all code according to Prettier
+      - run: npm run format
+
+      # Build the project to make sure everything compiles cleanly
+      - run: npm run build

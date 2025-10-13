@@ -1,0 +1,68 @@
+// ============================================================
+// File: .vscode/settings.json
+// Purpose: Shared workspace settings for VS Code
+// -----------------------------------------------------------
+// These settings make sure everyone working on the project
+// has the same editing experience:
+//
+// - Uses Prettier for automatic formatting
+// - Formats files on save
+// - Keeps consistent spacing and newlines
+// - Shares a small spell-check dictionary
+//
+// VS Code treats this file as JSON with comments (JSONC),
+// so comments like this are perfectly fine.
+// ============================================================
+
+{
+  // Use Prettier as the default formatter
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Format automatically on save
+  "editor.formatOnSave": true,
+
+  // YAML: keep Red Hat for validation, but let Prettier format
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "yaml.format.enable": false, // <- turn off Red Hat's formatter
+
+  // Optional: trim trailing spaces and keep clean newlines
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+
+  // Spell-checker workspace dictionary
+  "cSpell.words": [
+    "Accum",
+    "automagically",
+    "autorun",
+    "ehthumbs",
+    "esbenp",
+    "gctx",
+    "highscore",
+    "lhci",
+    "nctx",
+    "Nodejs",
+    "npm",
+    "offx",
+    "offy",
+    "playfield",
+    "Prettier",
+    "RockFit",
+    "RockSwap",
+    "scrollbars",
+    "TMVHB",
+    "touchbar",
+    "TypeScript",
+    "Vite"
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "liveServer.settings.port": 5502,
+  "[github-actions-workflow]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

@@ -1,0 +1,170 @@
+# ============================================================
+# File: .github/workflows/deploy.yml
+# Purpose: Build and Deploy the Game to GitHub Pages
+# ------------------------------------------------------------
+# This workflow runs automatically whenever new changes are
+# pushed to the main branch or launched manually.
+#
+# It builds the project using Node.js and Vite, then publishes
+# the finished site to GitHub Pages so anyone can play online.
+#
+# Think of it as the "pack and publish" step - it gathers all
+# the files into a clean, optimized bundle (the dist/ folder)
+# and uploads them to the GitHub Pages hosting service.
+#
+# After completion, the live game is available at:
+#   https://denisecase.github.io/rockswap/
+# ============================================================
+
+name: Deploy
+
+on:
+  # Run this workflow whenever the main branch is updated
+  push:
+    branches: [main]
+
+  # Allow running it manually from the GitHub Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read # Read access to repository content
+  pages: write # Permission to publish to GitHub Pages
+  id-token: write # Required for authentication with Pages
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Get the latest code from the repository
+      - uses: actions/checkout@v5
+
+      # 2A. Set up Node.js (the environment Vite needs to build)
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # 2B. Set a unique build ID (the current commit SHA)
+      - run: echo "VITE_BUILD_ID=${{ github.sha }}" >> $GITHUB_ENV
+
+      # 3. Install dependencies listed in package.json
+      - run: npm ci
+
+      # 4. Build the site into a static folder named dist/
+      - run: npm run build
+
+      # 5. Upload the finished dist/ folder as an artifact
+      #    so the next job can deploy it to GitHub Pages.
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    # This job waits until the build job finishes successfully
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      # The URL of the live site will be visible in the Actions summary
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # 6. Deploy the previously uploaded dist/ folder to Pages
+      #    v4 is the current stable version of the deploy action.
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  lighthouse:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo to write reports/badges
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install Lighthouse CI CLI
+        run: npm i -g @lhci/cli@0.13.x
+
+      - name: Wait for site to be live (GitHub Pages)
+        env:
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          URL="https://denisecase.github.io/rockswap/?v=${RUN_ID}"
+          echo "Checking: $URL"
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+            echo "Attempt $i -> HTTP $code"
+            if [ "$code" = "200" ]; then break; fi
+            sleep 5
+          done
+
+      - name: Run Lighthouse (mobile)
+        env:
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          mkdir -p reports/mobile
+          npx @lhci/cli@0.13.x autorun \
+            --collect.url="https://denisecase.github.io/rockswap/?v=${RUN_ID}" \
+            --collect.numberOfRuns=3 \
+            --collect.settings.formFactor=mobile \
+            --collect.settings.screenEmulation.mobile=true \
+            --collect.settings.throttlingMethod=simulate \
+            --collect.settings.chromeFlags="--no-sandbox --headless=new" \
+            --upload.target=filesystem \
+            --upload.outputDir=./reports/mobile || true
+
+      - name: Run Lighthouse (desktop)
+        env:
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          mkdir -p reports/desktop
+          npx @lhci/cli@0.13.x autorun \
+            --collect.url="https://denisecase.github.io/rockswap/?v=${RUN_ID}" \
+            --collect.numberOfRuns=3 \
+            --collect.settings.preset=desktop \
+            --collect.settings.chromeFlags="--no-sandbox --headless=new" \
+            --upload.target=filesystem \
+            --upload.outputDir=./reports/desktop || true
+
+      - name: Pick one JSON per preset and copy into assets
+        run: |
+          mkdir -p assets/data/lighthouse/mobile
+          mkdir -p assets/data/lighthouse/desktop
+          MOBILE_JSON=$(ls -1 reports/mobile/*-lhr.json | tail -n 1 || true)
+          DESKTOP_JSON=$(ls -1 reports/desktop/*-lhr.json | tail -n 1 || true)
+          if [ -n "$MOBILE_JSON" ]; then cp "$MOBILE_JSON" assets/data/lighthouse/mobile/report.json; fi
+          if [ -n "$DESKTOP_JSON" ]; then cp "$DESKTOP_JSON" assets/data/lighthouse/desktop/report.json; fi
+          echo "Mobile JSON: ${MOBILE_JSON:-none}"
+          echo "Desktop JSON: ${DESKTOP_JSON:-none}"
+
+      - name: Generate SVG badges from JSON (desktop scores)
+        run: node .github/scripts/make_badges.js assets/data/lighthouse/desktop/report.json
+
+      - name: Commit and push Lighthouse outputs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/data/lighthouse assets/img/scores
+          if git diff --cached --quiet; then
+            echo "No lighthouse changes to commit."
+          else
+            git commit -m "chore(ci): update Lighthouse reports and badges [skip ci]"
+            git push
+          fi
+
+      - name: Upload reports as workflow artifact (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: |
+            reports/mobile
+            reports/desktop
+            assets/data/lighthouse
+            assets/img/scores

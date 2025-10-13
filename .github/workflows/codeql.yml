@@ -1,0 +1,56 @@
+# ============================================================
+# File: .github/workflows/codeql.yml
+# Purpose: Security Scanning (GitHub CodeQL)
+# ------------------------------------------------------------
+# This workflow runs GitHub's built-in CodeQL scanner.
+#
+# It looks through the code and tries to detect security
+# vulnerabilities, coding errors, and dependency issues.
+#
+# Think of it as a "digital safety inspection" that runs
+# automatically each week and whenever code changes are pushed.
+#
+# CodeQL is maintained by GitHub and uses the latest scanner
+# tools under the hood - no setup required.
+# ============================================================
+
+name: CodeQL
+
+on:
+  # Run automatically on new commits or pull requests to main
+  push:
+    branches: [main]
+  pull_request:
+
+  # Run weekly on Mondays at 8:00 UTC to catch new issues
+  schedule:
+    - cron: "0 8 * * 1"
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript] # This project uses TypeScript/JavaScript
+
+    steps:
+      # 1. Check out the latest version of the code
+      - uses: actions/checkout@v5
+
+      # 2. Initialize CodeQL (the GitHub security analysis engine)
+      #    v3 is the latest stable version of the GitHub action.
+      #    It automatically uses the most recent CodeQL bundle.
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      # 3. Analyze the codebase and upload the results
+      #    Findings appear under the "Security > Code scanning alerts" tab.
+      - uses: github/codeql-action/analyze@v3

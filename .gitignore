@@ -1,0 +1,108 @@
+# ============================================================
+# File: .gitignore
+# Purpose: Tell Git which files and folders to ignore.
+# ------------------------------------------------------------
+# Git tracks files that belong to the project, i.e., files that we write.
+# This file lists things that do NOT need to be tracked:
+# system files, temporary files, and auto-generated build output.
+#
+# Think of it as a list of "these are not files we wrote".
+# ============================================================
+
+# ------------------------------------------------------------
+# .gitignore for a Node / Vite / TypeScript project
+# ------------------------------------------------------------
+
+# Local environment and build output
+dist/
+.temp/
+.cache/
+.env
+.env.*.local
+!.env.example
+
+# Vite specific
+.vite/
+
+# TypeScript
+*.tsbuildinfo
+
+# ------------------------------------------------------------
+# macOS system files
+# ------------------------------------------------------------
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS resource forks and thumbnails
+._*
+.Spotlight-V100
+.Trashes
+Icon\r
+ehthumbs.db
+Thumbs.db
+
+# ------------------------------------------------------------
+# VS Code settings and extensions
+# ------------------------------------------------------------
+# The .vscode folder holds local editor settings.
+# Most of the files inside are personal or computer-specific
+# and should NOT be shared (for example, window sizes, last open files, etc.).
+#
+# However, two files are useful for everyone working on the project:
+#   settings.json - contains shared workspace settings
+#   extensions.json - contains recommended VS Code extensions
+#
+# The pattern below ignores everything in .vscode/
+# but then re-includes only those two shared files.
+#
+# It means: ignore everything in .vscode,
+# except settings.json and extensions.json.
+# ------
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# ------------------------------------------------------------
+# Logs and temporary files
+# ------------------------------------------------------------
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Crash reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# ------------------------------------------------------------
+# Optional caches (safe to delete anytime)
+# ------------------------------------------------------------
+
+*.local
+.cache/
+*.tmp
+*.bak
+
+# ------------------------------------------------------------
+# OS backup or metadata files
+# ------------------------------------------------------------
+
+*.swp
+*.swo
+*~
+*.orig
+*.rej
+
+# ------------------------------------------------------------
+# GitHub Pages deployment artifacts
+# ------------------------------------------------------------
+
+# Pages build artifacts (if deploying from Actions)
+*.tar.gz
+pages-artifact/
+pages-build/

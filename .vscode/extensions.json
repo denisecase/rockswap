@@ -1,0 +1,20 @@
+{
+  // ============================================================
+  // File: .vscode/extensions.json
+  // Purpose: Recommend helpful VS Code extensions
+  // ------------------------------------------------------------
+  // When someone opens this project in VS Code, it will suggest
+  // installing these extensions automatically.
+  //
+  // - Prettier: formats code automatically on save
+  // - Code Spell Checker: catches small typos in code and docs
+  // - Red Hat YAML: provides syntax checking and suggestions
+  //   for YAML files like GitHub workflow definitions
+  // ============================================================
+
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "streetsidesoftware.code-spell-checker",
+    "redhat.vscode-yaml"
+  ]
+}

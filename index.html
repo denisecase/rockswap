@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RockSwap</title>
+    <meta
+      name="description"
+      content="A learner-friendly match-3 game built with TypeScript and HTML5 Canvas."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111111" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./index.css" />
+    <link rel="icon" type="image/png" href="./favicon.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7E7K6TMVHB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-7E7K6TMVHB");
+      gtag("consent", "default", {
+        ad_storage: "denied",
+        analytics_storage: "granted"
+      });
+      gtag("event", "page_view", {
+        page_path: "/rockswap/",
+        game_name: "RockSwap"
+      });
+    </script>
+  </head>
+
+  <body>
+    <main>
+      <!-- Game + HUD -->
+      <div class="wrap">
+        <div id="hud">Score: 0 | High: 0 | Moves: 0</div>
+        <button id="restart-btn" class="small">New Game</button>
+        <canvas id="board" width="400" height="400"></canvas>
+        <div class="small">Click a rock, then an adjacent one to swap.</div>
+        <button id="clear-data" class="small">Clear High Score</button>
+      </div>
+    </main>
+    <!-- Footer -->
+    <footer id="footer" aria-label="Project links and build info">
+      <span>RockSwap:</span>
+      <a href="https://denisecase.github.io/rockswap/" target="_blank" rel="noopener">Site</a> |
+      <a href="https://github.com/denisecase/rockswap" target="_blank" rel="noopener">Source</a>
+      <span id="version"></span>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
