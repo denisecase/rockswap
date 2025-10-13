@@ -53,6 +53,8 @@ npm run dev
 # open http://localhost:5174
 ```
 
+---
+
 ## Pre-Release Verification
 
 ```shell
@@ -60,17 +62,21 @@ npm install
 npm audit fix --force
 npm run format
 npm run dev
-# open http://localhost:5174
 ```
 
-# Final commit and tag
+Open <http://localhost:5174>.
+
+Final commit and tag:
+
+```shell
 git add .
 git commit -m "Prep vx.y.z"
 git push -u origin main
+```
 
-# Verify CI & Docs Actions pass on GitHub, then:
+Verify CI & Docs Actions pass on GitHub, then:
+
+```shell
 git tag vx.y.z -m "x.y.z"
 git push origin vx.y.z
 ```
-
----
